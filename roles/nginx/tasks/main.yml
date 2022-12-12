@@ -1,0 +1,59 @@
+---
+# tasks file for nginx
+- name: Update
+  become: true
+  apt:
+    update_cache: true
+    force_apt_get: true
+
+- name: Install nginx
+  become: true
+  package:
+    name: nginx
+    update_cache: true
+    state: latest
+
+- name: Config sites-availiable
+  become: true
+  template:
+    src: /etc/ansible/roles/nginx/templates/nginx-conf.j2
+    dest: /etc/nginx/sites-available/default
+  notify:
+  - Restart nginx
+
+- name: Documentroot
+  ansible.builtin.shell:
+    cmd: mkdir -p /opt/nginx/ansible
+
+- name: Add index.php
+  become: true
+  template:
+    src: /etc/ansible/roles/nginx/templates/index.j2
+    dest: /opt/nginx/ansible/index.php
+
+- name: Install PHP
+  become: true
+  package:
+    name: php-fpm
+    update_cache: true
+    state: latest
+
+- name: Add Index.php
+  become: true
+  template:
+    src: /etc/ansible/roles/nginx/templates/index.j2
+    dest: /var/www/html/index.nginx-debian.html
+
+- name: Restart nginx
+  become: true
+  ansible.builtin.systemd:
+    name: nginx
+    state: restarted
+    enabled: true
+
+- name: Php-fpm restart
+  become: true
+  ansible.builtin.systemd:
+    name: php7.4-fpm
+    state: restarted
+    enabled: true

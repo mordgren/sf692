@@ -1,0 +1,36 @@
+---
+# tasks file for dnsmasq
+- name: Update
+  become: true
+  apt:
+    update_cache: true
+    force_apt_get: true
+
+- name: Disable
+  ansible.builtin.shell:
+    cmd: systemctl disable --now systemd-resolved
+
+- name: Install dnsmasq
+  become: true
+  package:
+    name: dnsmasq
+    state: latest
+ 
+- name: Add config
+  become: true
+  template:
+    src: /etc/ansible/roles/dnsmasq/templates/dnsmasq.j2
+    dest: /etc/dnsmasq.conf
+
+- name: Add config resolv
+  become: true
+  template:
+    src: /etc/ansible/roles/dnsmasq/templates/resolv.j2
+    dest: /etc/resolv.conf
+
+- name: Restart
+  become: true
+  ansible.builtin.systemd:
+    name: dnsmasq
+    state: restarted
+    enabled: true
