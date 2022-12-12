@@ -2,4 +2,4 @@
 localhosts ansible_host=127.0.0.1
 
 [servers]
-devops1 ansible_host=10.0.77.19 ansible_user=admin ansible_pass=qwerty123 ansible_ssh_private_key_file=/root/.ssh/admin
+server ansible_host=10.0.77.19 ansible_user=admin ansible_pass=qwerty123 ansible_ssh_private_key_file=/root/.ssh/admin
